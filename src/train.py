@@ -70,7 +70,7 @@ def validate(model, device, validation_loader):
     test_loss = 0
     correct = 0
     #absolute_error = torch.nn.MSELoss()
-    absolute_error = torch.nn.L1Loss
+    absolute_error = torch.nn.L1Loss()
     with torch.no_grad():
         for data, target in validation_loader: # load the data
             data, target = data.to(device), target.to(device)
