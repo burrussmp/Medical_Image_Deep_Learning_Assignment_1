@@ -13,23 +13,58 @@ from torch.utils.data import TensorDataset
 import math
 from train import PhoneLocator
 
+def createImages(model,use_cuda):
+    pathToTest = '../test' 
+    for file in os.listdir(pathToTest):
+        orig_img = cv2.imread(os.path.join(pathToTest,file)).astype(np.float32)
+        img = np.expand_dims(preprocess(np.copy(orig_img)),axis=0)
+        img = reshapeInput(img)
+        prediction = model(torch.tensor(img))
+        if (use_cuda):
+            result = prediction.cpu().data.numpy()[0]
+        else:
+            result = prediction.data.numpy()[0]
+        print(orig_img.shape)
+        x = int(result[0]*orig_img.shape[1])
+        y = int(result[0]*orig_img.shape[0])
+        drawn_circle = cv2.circle(orig_img, (x,y), 3, (0,0,255), 1)
+        cv2.imshow('Located phone',drawn_circle.astype(np.uint8))
+        cv2.waitKey(0)
 
 def main():
+    # parameters
+    pathToModel = './PhoneDetector.pt'
     parser = argparse.ArgumentParser(description='Assignment 1')
     parser.add_argument("files",nargs="*")
     args = parser.parse_args()
-    if (len(args.files)==0):
 
-    else:
-        for file in files:
-            assert os.path.isfile(file),\
-                print('SKIPPING: File does not exist: ', file)
-            
     # attempt to use GPU if available
     use_cuda = torch.cuda.is_available()
     torch.manual_seed(123456789)
     device = torch.device("cuda" if use_cuda else "cpu")
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
+    model = PhoneLocator().to(device)        
+    if os.path.isfile(pathToModel):
+        if not use_cuda:
+            model.load_state_dict(torch.load(pathToModel,map_location='cpu'))
+        else:
+            model.load_state_dict(torch.load(pathToModel))
+    if (len(args.files)==0):
+        createImages(model,use_cuda)
+    else:
+        for file in args.files:
+            assert os.path.isfile(file),\
+                print('SKIPPING: File does not exist: ', file)
+            img = cv2.imread(file).astype(np.float32)
+            img = np.expand_dims(preprocess(img),axis=0)
+            img = reshapeInput(img)
+            prediction = model(torch.tensor(img))
+            if (use_cuda):
+                result = prediction.cpu().data.numpy()
+            else:
+                result = prediction.data.numpy()
+            print(np.round(result,4))
+
 
     x_train,y_train,x_val,y_val,x_test = load_dataset()
 
