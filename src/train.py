@@ -142,8 +142,8 @@ def main():
             best_loss = val_loss
             torch.save(model.state_dict(), pathToModel)
         scheduler.step()
-        print(val_loss_save)
-        print(train_loss_save)
+    np.save('/content/drive/My Drive/MedicalImageAssignments/val_loss.npy',val_loss_save)
+    np.save('/content/drive/My Drive/MedicalImageAssignments/train_loss.npy',train_loss_save)
 
 if __name__ == '__main__':
     main()
