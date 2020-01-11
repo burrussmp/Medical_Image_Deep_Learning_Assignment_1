@@ -23,7 +23,7 @@ class PhoneLocator(nn.Module):
         self.dropout1 = nn.Dropout2d(0.25)
         self.fc1 = nn.Linear(7168, 512)
         self.fc2 = nn.Linear(512, 2)
-
+        self.hardTanh = nn.Hardtanh(0.0,1.0)
     # define the foward pass, including the operations between the layers
     # Operations includ ReLu activations, max pooling, flattening before the fully connected layers
     # and softmax on the output to produce a normalized (1,10) output vector
@@ -41,7 +41,7 @@ class PhoneLocator(nn.Module):
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
-        output = torch.nn.Hardtanh(x,min_val=0.0,max_val=1.0)
+        output = self.hardTanh(x)
         return output
 
 # train the classifier for a single epoch
