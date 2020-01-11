@@ -47,13 +47,13 @@ class PhoneLocator(nn.Module):
 # train the classifier for a single epoch
 def train(model, device, train_loader, optimizer, epoch):
     model.train() # training  mode
-    mean_squared_error = torch.nn.MSELoss()
+    absolute_error = torch.nn.L1Loss()
     total_loss = 0.0
     for batch_idx, (data, target) in enumerate(train_loader): # iterate across training dataset using batch size
         data, target = data.to(device), target.to(device) #
         optimizer.zero_grad() # set gradients to zero
         output = model(data) # get the outputs of the model
-        loss = mean_squared_error(output, target)
+        loss = absolute_error(output, target)
         total_loss += loss
         loss.backward() # Accumulate the gradient
         optimizer.step() # based on currently stored gradient update model params using optomizer rules
@@ -69,12 +69,13 @@ def validate(model, device, validation_loader):
     model.eval() # inference mode
     test_loss = 0
     correct = 0
-    mean_squared_error = torch.nn.MSELoss()
+    #absolute_error = torch.nn.MSELoss()
+    absolute_error = torch.nn.L1Loss
     with torch.no_grad():
         for data, target in validation_loader: # load the data
             data, target = data.to(device), target.to(device)
             output = model(data) # collect the outputs
-            test_loss += mean_squared_error(output, target)  # sum up batch loss
+            test_loss += absolute_error(output, target)  # sum up batch loss
             distance = torch.dist(target,output)
             correct += distance.lt(torch.tensor(0.05)).sum().item()
     test_loss /= len(validation_loader.dataset) # compute the average loss
