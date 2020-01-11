@@ -60,7 +60,7 @@ def train(model, device, train_loader, optimizer, epoch):
         if batch_idx % 10 == 0: # provide updates on training process
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item()))
+                100. * batch_idx / len(train_loader), loss.item()),end="\r"))
     avg_loss = total_loss / len(train_loader.dataset)
     return avg_loss
 
@@ -142,8 +142,8 @@ def main():
             best_loss = val_loss
             torch.save(model.state_dict(), pathToModel)
         scheduler.step()
-    np.save('/content/drive/My Drive/MedicalImageAssignments/val_loss.npy',val_loss_save)
-    np.save('/content/drive/My Drive/MedicalImageAssignments/train_loss.npy',train_loss_save)
+        np.save('/content/drive/My Drive/MedicalImageAssignments/val_loss.npy',val_loss_save)
+        np.save('/content/drive/My Drive/MedicalImageAssignments/train_loss.npy',train_loss_save)
 
 if __name__ == '__main__':
     main()
