@@ -109,6 +109,7 @@ def main():
     x_val = preprocess(x_val)
     # augment data augmentation
     x_train,y_train = performDataAugmentation(x_train,y_train)
+    x_val,y_val = performDataAugmentation(x_val,y_val)
     x_train = reshapeInput(x_train)
     x_val = reshapeInput(x_val)
     # load the model

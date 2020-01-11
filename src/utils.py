@@ -85,7 +85,7 @@ def AugmentBrightnessRandomly(X,Y,br=0.25):
 
 def performDataAugmentation(X,Y):
     X,Y = AugmentFlipImage(X,Y)
-    X,Y = AugmentBrightnessRandomly(X,Y,br=0.25)
+    #X,Y = AugmentBrightnessRandomly(X,Y,br=0.25)
     return X,Y
 
 def reshapeInput(X):
