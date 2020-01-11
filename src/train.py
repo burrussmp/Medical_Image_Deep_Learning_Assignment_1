@@ -58,9 +58,9 @@ def train(model, device, train_loader, optimizer, epoch):
         loss.backward() # Accumulate the gradient
         optimizer.step() # based on currently stored gradient update model params using optomizer rules
         if batch_idx % 10 == 0: # provide updates on training process
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+            print('\rTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item()),end="\r")
+                100. * batch_idx / len(train_loader), loss.item()))
     avg_loss = total_loss / len(train_loader.dataset)
     return avg_loss
 
@@ -79,7 +79,7 @@ def validate(model, device, validation_loader):
             distance = torch.dist(target,output)
             correct += distance.lt(torch.tensor(0.05)).sum().item()
     test_loss /= len(validation_loader.dataset) # compute the average loss
-    print('\nTest set: Average loss: {:.4f}, Number within range: {}/{} ({:.0f}%)\n'.format(
+    print('Test set: Average loss: {:.4f}, Number within range: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(validation_loader.dataset),
         100. * correct / len(validation_loader.dataset)))
     return test_loss
