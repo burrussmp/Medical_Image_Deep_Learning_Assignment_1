@@ -41,7 +41,7 @@ class PhoneLocator(nn.Module):
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
-        output = F.relu(x)
+        output = torch.nn.Hardtanh(x,min_val=0.0,max_val=1.0)
         return output
 
 # train the classifier for a single epoch
