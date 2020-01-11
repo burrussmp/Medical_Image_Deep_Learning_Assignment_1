@@ -48,17 +48,21 @@ class PhoneLocator(nn.Module):
 def train(model, device, train_loader, optimizer, epoch):
     model.train() # training  mode
     mean_squared_error = torch.nn.MSELoss()
+    total_loss = 0.0
     for batch_idx, (data, target) in enumerate(train_loader): # iterate across training dataset using batch size
         data, target = data.to(device), target.to(device) #
         optimizer.zero_grad() # set gradients to zero
         output = model(data) # get the outputs of the model
         loss = mean_squared_error(output, target)
+        total_loss += loss
         loss.backward() # Accumulate the gradient
         optimizer.step() # based on currently stored gradient update model params using optomizer rules
         if batch_idx % 10 == 0: # provide updates on training process
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
+    avg_loss = total_loss / len(train_loader.dataset)
+    return avg_loss
 
 # test the classifier
 def validate(model, device, validation_loader):
@@ -77,7 +81,7 @@ def validate(model, device, validation_loader):
     print('\nTest set: Average loss: {:.4f}, Number within range: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(validation_loader.dataset),
         100. * correct / len(validation_loader.dataset)))
-    return test_loss.data.numpy()
+    return test_loss
 
 
 def main():
@@ -122,14 +126,24 @@ def main():
         model.load_state_dict(torch.load(pathToModel))
     # each iteration gather the n=test_batch_size samples and their respective labels [0,9]
     best_loss = math.inf
+    train_loss_save = np.zeros((epochs))
+    val_loss_save = np.zeros((epochs))
     for epoch in range(1, epochs + 1):
-        train(model, device, train_loader, optimizer, epoch)
+        train_loss = train(model, device, train_loader, optimizer, epoch)
         val_loss = validate(model, device, validation_loader)
+        if (use_cuda):
+            train_loss_save[epoch-1] = train_loss.cpu().data.numpy()
+            val_loss_save[epoch-1] = val_loss.cpu().data.numpy()
+        else:
+            train_loss_save[epoch-1] = train_loss.data.numpy()
+            val_loss[epoch-1] = val_loss.data.numpy()
         if (val_loss < best_loss):
             print('Loss improved from ', best_loss, 'to',val_loss,': Saving new model to',pathToModel)
             best_loss = val_loss
             torch.save(model.state_dict(), pathToModel)
         scheduler.step()
+        print(val_loss_save)
+        print(train_loss_save)
 
 if __name__ == '__main__':
     main()
