@@ -16,13 +16,14 @@ class PhoneLocator(nn.Module):
     def __init__(self):
         super(PhoneLocator, self).__init__()
         # 2 convolutional layers nn.Conv2d(in_channels,out_channels,kernel_size,stride)
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32,kernel_size=5)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64,kernel_size=5)
-        self.conv3 = nn.Conv2d(in_channels=64, out_channels=128,kernel_size=3)
-        self.conv4 = nn.Conv2d(in_channels=128, out_channels=256,kernel_size=3)
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=24,kernel_size=5)
+        self.conv2 = nn.Conv2d(in_channels=24, out_channels=36,kernel_size=5)
+        self.conv3 = nn.Conv2d(in_channels=36, out_channels=48,kernel_size=3)
+        self.conv4 = nn.Conv2d(in_channels=48, out_channels=64,kernel_size=3)
         self.dropout1 = nn.Dropout2d(0.25)
-        self.fc1 = nn.Linear(7168, 512)
-        self.fc2 = nn.Linear(512, 2)
+        self.fc1 = nn.Linear(8064, 100)
+        self.fc2 = nn.Linear(100, 50)
+        self.fc3 = nn.Linear(50, 2)
         self.hardTanh = nn.Hardtanh(0.0,1.0)
     # define the foward pass, including the operations between the layers
     # Operations includ ReLu activations, max pooling, flattening before the fully connected layers
@@ -31,7 +32,7 @@ class PhoneLocator(nn.Module):
         x = self.conv1(x)
         x = F.relu(x)
         x = self.conv2(x)
-        x = F.max_pool2d(x, 8)
+        x = F.max_pool2d(x, 4)
         x = self.conv3(x)
         x = F.relu(x)
         x = self.conv4(x)
@@ -40,7 +41,11 @@ class PhoneLocator(nn.Module):
         x = self.dropout1(x)
         x = self.fc1(x)
         x = F.relu(x)
+        x = self.dropout1(x)
         x = self.fc2(x)
+        x = F.relu(x)
+        x = self.dropout1(x)
+        x = self.fc3(x)
         output = self.hardTanh(x)
         return output
 
