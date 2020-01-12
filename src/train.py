@@ -22,7 +22,8 @@ class PhoneLocator(nn.Module):
         self.conv4 = nn.Conv2d(in_channels=256, out_channels=512,kernel_size=3)
         self.dropout1 = nn.Dropout2d(0.5)
         self.dropout2 = nn.Dropout2d(0.25)
-        self.fc1 = nn.Linear(258048, 2)
+        self.fc1 = nn.Linear(258048, 1000)
+        self.fc2 = nn.Linear(1000, 2)
         self.hardtanh = torch.nn.Hardtanh(0.0,1.0)
     # define the foward pass, including the operations between the layers
     # Operations includ ReLu activations, max pooling, flattening before the fully connected layers
@@ -50,15 +51,8 @@ class PhoneLocator(nn.Module):
 
         x = torch.flatten(x, 1)
         x = self.dropout1(x)
-        output = self.hardtanh(self.fc1(x))
-        #x = F.relu(x)
-
-        # x = self.dropout1(x)
-        # x = self.fc2(x)
-        # x = F.relu(x)
-
-        # x = self.dropout1(x)
-        # output = self.hardtanh(self.fc3(x))
+        x = F.relu(self.fc1(x))
+        output = self.hardtanh(self.fc2(x))
         return output
 # train the classifier for a single epoch
 def train(model, device, train_loader, optimizer, epoch):
