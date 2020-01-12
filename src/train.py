@@ -16,12 +16,12 @@ class PhoneLocator(nn.Module):
     def __init__(self):
         super(PhoneLocator, self).__init__()
         # 2 convolutional layers nn.Conv2d(in_channels,out_channels,kernel_size,stride)
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32,kernel_size=3)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64,kernel_size=3)
-        self.conv3 = nn.Conv2d(in_channels=64, out_channels=128,kernel_size=3)
-        self.conv4 = nn.Conv2d(in_channels=128, out_channels=256,kernel_size=3)
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=64,kernel_size=5)
+        self.conv2 = nn.Conv2d(in_channels=64, out_channels=128,kernel_size=5)
+        self.conv3 = nn.Conv2d(in_channels=128, out_channels=256,kernel_size=3)
+        self.conv4 = nn.Conv2d(in_channels=256, out_channels=512,kernel_size=3)
 
-        self.dropout1 = nn.Dropout2d(0.5)
+        self.dropout1 = nn.Dropout2d(0.25)
         self.fc1 = nn.Linear(141056, 1096)
         self.fc2 = nn.Linear(1096, 512)
         self.fc3 = nn.Linear(512, 128)
@@ -36,7 +36,7 @@ class PhoneLocator(nn.Module):
         x = F.relu(x)
         x = self.conv2(x)
         x = F.relu(x)
-        x = F.max_pool2d(x, 4)
+        #x = F.max_pool2d(x, 4)
 
         x = self.conv3(x)
         x = F.relu(x)
