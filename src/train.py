@@ -34,13 +34,13 @@ class PhoneLocator(nn.Module):
         x = F.relu(x)
         x = self.conv2(x)
         x = F.relu(x)
-        x = F.max_pool2d(x, 8)
+        x = F.avg_pool2d(x, 8)
 
         x = self.conv3(x)
         x = F.relu(x)
         x = self.conv4(x)
         x = F.relu(x)
-        x = F.max_pool2d(x, 8)  
+        x = F.avg_pool2d(x, 8)  
         x = torch.flatten(x,1)
         
         #x = self.dropout1(x)
