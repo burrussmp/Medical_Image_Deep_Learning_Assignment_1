@@ -22,9 +22,11 @@ class PhoneLocator(nn.Module):
         self.conv4 = nn.Conv2d(in_channels=128, out_channels=256,kernel_size=3)
 
         self.dropout1 = nn.Dropout2d(0.5)
-        self.fc1 = nn.Linear(141056, 512)
-        self.fc2 = nn.Linear(512, 512)
-        self.fc3 = nn.Linear(512, 2)
+        self.fc1 = nn.Linear(141056, 1096)
+        self.fc2 = nn.Linear(1096, 512)
+        self.fc3 = nn.Linear(512, 128)
+        self.fc4 = nn.Linear(128, 10)
+        self.fc5 = nn.Linear(10, 2)
         #self.hardTanh = nn.Hardtanh(0.0,1.0)
     # define the foward pass, including the operations between the layers
     # Operations includ ReLu activations, max pooling, flattening before the fully connected layers
@@ -44,13 +46,14 @@ class PhoneLocator(nn.Module):
         x = torch.flatten(x, 1)
         
         x = self.dropout1(x)
-        x = self.fc1(x)
-        x = F.relu(x)
-
+        x = F.relu(self.fc1(x))
         x = self.dropout1(x)
-        x = self.fc2(x)
-        x = F.relu(x)
-        x = self.fc3(x)
+        x = F.relu(self.fc2(x))
+        x = self.dropout1(x)
+        x = F.relu(self.fc3(x))
+        x = self.dropout1(x)
+        x = F.relu(self.fc4(x))
+        x = self.fc5(x)
         #output = self.hardTanh(x)
         return x
 
