@@ -22,7 +22,7 @@ class PhoneLocator(nn.Module):
         self.conv4 = nn.Conv2d(in_channels=128, out_channels=256,kernel_size=3)
 
         self.dropout1 = nn.Dropout2d(0.5)
-        self.fc1 = nn.Linear(1536, 256)
+        self.fc1 = nn.Linear(133632, 256)
         self.fc2 = nn.Linear(256, 100)
         self.fc3 = nn.Linear(100, 2)
         self.hardTanh = nn.Hardtanh(0.0,1.0)
@@ -41,12 +41,6 @@ class PhoneLocator(nn.Module):
         x = self.conv4(x)
         x = F.relu(x)
         x = F.max_pool2d(x, 4)  
-
-        # x = self.conv5(x)
-        # x = F.relu(x)
-        # x = self.conv6(x)
-        # x = F.relu(x)
-        x = F.max_pool2d(x, 8) 
         x = torch.flatten(x, 1)
         
         x = self.dropout1(x)
@@ -57,8 +51,8 @@ class PhoneLocator(nn.Module):
         x = self.fc2(x)
         x = F.relu(x)
         x = self.fc3(x)
-        output = self.hardTanh(x)
-        return output
+        #output = self.hardTanh(x)
+        return x
 
 # train the classifier for a single epoch
 def train(model, device, train_loader, optimizer, epoch):
@@ -104,7 +98,7 @@ def validate(model, device, validation_loader):
 def main():
     # Training settings
     batch_size = 8
-    learning_rate = 0.1
+    learning_rate = 0.001
     gamma = 0.1
     epochs = 100
     lr_scheduler_step_size = 10
