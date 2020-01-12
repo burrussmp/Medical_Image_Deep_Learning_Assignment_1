@@ -104,10 +104,10 @@ def validate(model, device, validation_loader):
 def main():
     # Training settings
     batch_size = 8
-    learning_rate = 0.0001
-    gamma = 0.5
+    learning_rate = 0.1
+    gamma = 0.1
     epochs = 100
-    lr_scheduler_step_size = 5
+    lr_scheduler_step_size = 10
     adam_betas = (0.9,0.999)
     pathToModel = './PhoneDetector.pt'
     restart = True
