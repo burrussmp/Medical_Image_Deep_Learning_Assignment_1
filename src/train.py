@@ -24,8 +24,8 @@ class PhoneLocator(nn.Module):
         self.conv6 = nn.Conv2d(in_channels=128, out_channels=256,kernel_size=3)
         self.dropout1 = nn.Dropout2d(0.5)
         self.fc1 = nn.Linear(3840, 1024)
-        self.fc2 = nn.Linear(1024, 1024)
-        self.fc3 = nn.Linear(1024, 2)
+        self.fc2 = nn.Linear(1024, 10)
+        self.fc3 = nn.Linear(10, 2)
         self.hardTanh = nn.Hardtanh(0.0,1.0)
     # define the foward pass, including the operations between the layers
     # Operations includ ReLu activations, max pooling, flattening before the fully connected layers
