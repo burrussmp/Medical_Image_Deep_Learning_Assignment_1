@@ -24,9 +24,8 @@ def createImages(model,use_cuda):
             result = prediction.cpu().data.numpy()[0]
         else:
             result = prediction.data.numpy()[0]
-        print(orig_img.shape)
+        y = int(result[1]*orig_img.shape[0])
         x = int(result[0]*orig_img.shape[1])
-        y = int(result[0]*orig_img.shape[0])
         drawn_circle = cv2.circle(orig_img, (x,y), 3, (0,0,255), 1)
         cv2.imshow('Located phone',drawn_circle.astype(np.uint8))
         cv2.waitKey(0)

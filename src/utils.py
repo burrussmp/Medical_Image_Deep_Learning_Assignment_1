@@ -50,8 +50,6 @@ def load_dataset(img_size=(326,490,3)):
 
 def preprocess(X):
     X /= 255.
-    X *= 2.
-    X -= 1.
     return X
 
 def AugmentFlipImage(X,Y):
