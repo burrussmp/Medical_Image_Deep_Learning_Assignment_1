@@ -24,9 +24,6 @@ class PhoneLocator(nn.Module):
         self.fc1 = nn.Linear(8064, 100)
         self.fc2 = nn.Linear(100, 50)
         self.fc3 = nn.Linear(50, 2)
-        self.fc1 = nn.Linear(33408, 1024)
-        self.fc2 = nn.Linear(1024, 100)
-        self.fc3 = nn.Linear(100, 2)
         self.hardTanh = nn.Hardtanh(0.0,1.0)
     # define the foward pass, including the operations between the layers
     # Operations includ ReLu activations, max pooling, flattening before the fully connected layers
@@ -41,8 +38,6 @@ class PhoneLocator(nn.Module):
         x = F.relu(x)
         x = self.conv4(x)
         x = F.max_pool2d(x, 8)  
-        x = F.relu(x)
-        x = F.max_pool2d(x, 4)  
         x = torch.flatten(x, 1)
         x = self.dropout1(x)
         x = self.fc1(x)
@@ -53,7 +48,7 @@ class PhoneLocator(nn.Module):
         x = self.dropout1(x)
         x = self.fc3(x)
         output = self.hardTanh(x)
-
+        return output
 # train the classifier for a single epoch
 def train(model, device, train_loader, optimizer, epoch):
     model.train() # training  mode
@@ -120,8 +115,8 @@ def main():
     x_train = preprocess(x_train)
     x_val = preprocess(x_val)
     # augment data augmentation
-    x_train,y_train = performDataAugmentation(x_train,y_train)
-    x_val,y_val = performDataAugmentation(x_val,y_val)
+    #x_train,y_train = performDataAugmentation(x_train,y_train)
+    #x_val,y_val = performDataAugmentation(x_val,y_val)
     x_train = reshapeInput(x_train)
     x_val = reshapeInput(x_val)
     # load the model
