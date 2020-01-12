@@ -16,16 +16,18 @@ class PhoneLocator(nn.Module):
     def __init__(self):
         super(PhoneLocator, self).__init__()
         # 2 convolutional layers nn.Conv2d(in_channels,out_channels,kernel_size,stride)
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=64,kernel_size=5)
-        self.conv2 = nn.Conv2d(in_channels=64, out_channels=128,kernel_size=5)
-        self.conv3 = nn.Conv2d(in_channels=128, out_channels=256,kernel_size=5)
-        self.conv4 = nn.Conv2d(in_channels=256, out_channels=512,kernel_size=5)
-
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=24,kernel_size=5)
+        self.conv2 = nn.Conv2d(in_channels=24, out_channels=36,kernel_size=5)
+        self.conv3 = nn.Conv2d(in_channels=36, out_channels=48,kernel_size=3)
+        self.conv4 = nn.Conv2d(in_channels=48, out_channels=64,kernel_size=3)
         self.dropout1 = nn.Dropout2d(0.25)
-        self.fc1 = nn.Linear(9216, 2)
-        # self.fc2 = nn.Linear(512, 100)
+        self.fc1 = nn.Linear(8064, 100)
+        self.fc2 = nn.Linear(100, 50)
+        self.fc3 = nn.Linear(50, 2)
+        self.fc1 = nn.Linear(33408, 1024)
+        self.fc2 = nn.Linear(1024, 100)
         self.fc3 = nn.Linear(100, 2)
-        #self.hardTanh = nn.Hardtanh(0.0,1.0)
+        self.hardTanh = nn.Hardtanh(0.0,1.0)
     # define the foward pass, including the operations between the layers
     # Operations includ ReLu activations, max pooling, flattening before the fully connected layers
     # and softmax on the output to produce a normalized (1,10) output vector
@@ -34,22 +36,23 @@ class PhoneLocator(nn.Module):
         x = F.relu(x)
         x = self.conv2(x)
         x = F.relu(x)
-        x = F.avg_pool2d(x, 8)
-
+        x = F.max_pool2d(x, 4)
         x = self.conv3(x)
         x = F.relu(x)
         x = self.conv4(x)
+        x = F.max_pool2d(x, 8)  
         x = F.relu(x)
-        x = F.avg_pool2d(x, 8)  
-        x = torch.flatten(x,1)
-        
-        #x = self.dropout1(x)
-        #x = F.relu(self.fc1(x))
-        #x = self.dropout1(x)
-        # x = F.relu(self.fc2(x))
+        x = F.max_pool2d(x, 4)  
+        x = torch.flatten(x, 1)
+        x = self.dropout1(x)
         x = self.fc1(x)
-        #output = self.hardTanh(x)
-        return x
+        x = F.relu(x)
+        x = self.dropout1(x)
+        x = self.fc2(x)
+        x = F.relu(x)
+        x = self.dropout1(x)
+        x = self.fc3(x)
+        output = self.hardTanh(x)
 
 # train the classifier for a single epoch
 def train(model, device, train_loader, optimizer, epoch):
@@ -84,6 +87,8 @@ def validate(model, device, validation_loader):
             output = model(data) # collect the outputs
             test_loss += criteria(output, target)  # sum up batch loss
             distance = torch.dist(target,output)
+            print(output)
+            print(target)
             correct += distance.lt(torch.tensor(0.05)).sum().item()
     test_loss /= len(validation_loader.dataset) # compute the average loss
     print('Test set: Average loss: {:.4f}, Number within range: {}/{} ({:.0f}%)\n'.format(
