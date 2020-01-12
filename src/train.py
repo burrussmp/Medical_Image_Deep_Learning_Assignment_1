@@ -20,8 +20,8 @@ class PhoneLocator(nn.Module):
         self.conv2 = nn.Conv2d(in_channels=24, out_channels=36,kernel_size=5)
         self.conv3 = nn.Conv2d(in_channels=36, out_channels=48,kernel_size=3)
         self.conv4 = nn.Conv2d(in_channels=48, out_channels=64,kernel_size=3)
-        self.dropout1 = nn.Dropout2d(0.25)
-        self.fc1 = nn.Linear(33408, 1024)
+        self.dropout1 = nn.Dropout2d(0.5)
+        self.fc1 = nn.Linear(581504, 1024)
         self.fc2 = nn.Linear(1024, 100)
         self.fc3 = nn.Linear(100, 2)
         self.hardTanh = nn.Hardtanh(0.0,1.0)
@@ -33,13 +33,13 @@ class PhoneLocator(nn.Module):
         x = F.relu(x)
         x = self.conv2(x)
         x = F.relu(x)
-        x = F.max_pool2d(x, 4)
+        x = F.max_pool2d(x, 2)
 
         x = self.conv3(x)
         x = F.relu(x)
         x = self.conv4(x)
         x = F.relu(x)
-        x = F.max_pool2d(x, 4)  
+        x = F.max_pool2d(x, 2)  
         
         x = torch.flatten(x, 1)
         
@@ -89,6 +89,7 @@ def validate(model, device, validation_loader):
             output = model(data) # collect the outputs
             test_loss += criteria(output, target)  # sum up batch loss
             distance = torch.dist(target,output)
+            print(distance)
             correct += distance.lt(torch.tensor(0.05)).sum().item()
     test_loss /= len(validation_loader.dataset) # compute the average loss
     print('Test set: Average loss: {:.4f}, Number within range: {}/{} ({:.0f}%)\n'.format(
