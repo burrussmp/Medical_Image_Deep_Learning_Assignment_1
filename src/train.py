@@ -87,9 +87,6 @@ def validate(model, device, validation_loader):
             output = model(data) # collect the outputs
             test_loss += criteria(output, target)  # sum up batch loss
             distance = torch.dist(target,output)
-            print(target)
-            print(output)
-            print(distance)
             correct += distance.lt(torch.tensor(0.05)).sum().item()
     test_loss /= len(validation_loader.dataset) # compute the average loss
     print('Test set: Average loss: {:.4f}, Number within range: {}/{} ({:.0f}%)\n'.format(
