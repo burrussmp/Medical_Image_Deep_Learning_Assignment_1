@@ -16,16 +16,16 @@ class PhoneLocator(nn.Module):
     def __init__(self):
         super(PhoneLocator, self).__init__()
         # 2 convolutional layers nn.Conv2d(in_channels,out_channels,kernel_size,stride)
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32,kernel_size=5)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64,kernel_size=5)
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32,kernel_size=3)
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64,kernel_size=3)
         self.conv3 = nn.Conv2d(in_channels=64, out_channels=128,kernel_size=3)
         self.conv4 = nn.Conv2d(in_channels=128, out_channels=256,kernel_size=3)
 
         self.dropout1 = nn.Dropout2d(0.5)
-        self.fc1 = nn.Linear(133632, 256)
-        self.fc2 = nn.Linear(256, 100)
-        self.fc3 = nn.Linear(100, 2)
-        self.hardTanh = nn.Hardtanh(0.0,1.0)
+        self.fc1 = nn.Linear(141056, 512)
+        self.fc2 = nn.Linear(512, 512)
+        self.fc3 = nn.Linear(512, 2)
+        #self.hardTanh = nn.Hardtanh(0.0,1.0)
     # define the foward pass, including the operations between the layers
     # Operations includ ReLu activations, max pooling, flattening before the fully connected layers
     # and softmax on the output to produce a normalized (1,10) output vector
