@@ -19,6 +19,7 @@ def createImages(model,use_cuda):
         orig_img = cv2.imread(os.path.join(pathToTest,file)).astype(np.float32)
         img = np.expand_dims(preprocess(np.copy(orig_img)),axis=0)
         img = reshapeInput(img)
+        print(orig_img.shape)
         prediction = model(torch.tensor(img))
         if (use_cuda):
             result = prediction.cpu().data.numpy()[0]

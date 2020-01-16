@@ -63,7 +63,7 @@ def AugmentFlipImage(X,Y):
     y_flip_vertical_horizontal = np.copy(y_flip_vertical)
     y_flip_vertical_horizontal[:,0] = 1 - y_flip_vertical_horizontal[:,0]
     X = np.concatenate((X,x_flip_horizontal,x_flip_vertical,x_flip_vertical_horizontal),axis=0)
-    Y = np.concatenate((Y,y_flip_horizontal,y_flip_vertical,y_flip_vertical_horizontal),axis=0)
+    Y = np.concatenate((Y,y_flip_horizontal,y_flip_vertical,y_flip_vertical_horizontal),axis=0)    
     return X,Y
 
 def AugmentBrightnessRandomly(X,Y,br=0.25):
