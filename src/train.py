@@ -12,11 +12,21 @@ from utils import preprocess,load_dataset,performDataAugmentation,reshapeInput
 from torch.utils.data import TensorDataset
 import math
 import torchvision.models as models
-from UNet import UNet
+#from UNet import UNet
+
+class regularizer(nn.Module):
+    def __init__(self):
+        super(regularizer, self).__init__()
+        self.dropout2 = nn.Dropout2d(0.25)
+        self.fc1 = nn.Linear(in_features=512,out_features=2)
+
+    def forward(self, x):
+        x = self.dropout2(x)
+        return self.fc1(x)
 
 def transferResNet18():
     resnet = models.resnet18(pretrained=False)
-    resnet.fc = nn.Linear(in_features=512,out_features=2)
+    resnet.fc = regularizer()
     return resnet
 
 # train the classifier for a single epoch
@@ -65,11 +75,11 @@ def validate(model, device, validation_loader):
 
 def main():
     # Training settings
-    batch_size = 4
-    learning_rate = 0.001
+    batch_size = 8
+    learning_rate = 0.0001
     gamma = 0.5
-    epochs = 200
-    lr_scheduler_step_size = 50
+    epochs = 150
+    lr_scheduler_step_size = 30
     adam_betas = (0.9,0.999)
     pathToModel = './PhoneDetector.pt'
     restart = True

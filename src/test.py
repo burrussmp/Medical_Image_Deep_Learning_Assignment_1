@@ -11,7 +11,6 @@ import cv2
 from utils import preprocess,load_dataset,performDataAugmentation,reshapeInput
 from torch.utils.data import TensorDataset
 import math
-from train import PhoneLocator
 from train import transferResNet18
 import matplotlib.pyplot as plt
 from config import *
@@ -28,16 +27,21 @@ def createImages(model,use_cuda):
             result = prediction.cpu().data.numpy()[0]
         else:
             result = prediction.data.numpy()[0]
+        print(file,result)
         y = int(result[1]*orig_img.shape[0])
         x = int(result[0]*orig_img.shape[1])
-        drawn_circle = cv2.circle(orig_img, (x,y), 3, (0,0,255), 1)
-        cv2.imshow('Located phone',drawn_circle.astype(np.uint8))
-        cv2.waitKey(0)
+        drawn_circle = cv2.circle(orig_img, (x,y), 4, (0,0,255), -1)
+        cv2.imwrite('../resources/'+file,drawn_circle.astype(np.uint8))
+        # cv2.imshow('Located phone',drawn_circle.astype(np.uint8))
+        # cv2.waitKey(0)
     # plot the training and validation loss
     val_loss = np.load(os.path.join(PATH_TO_VALIDATION_LOSS,'val_loss.npy'))
     train_loss = np.load(os.path.join(PATH_TO_TRAIN_LOSS,'train_loss.npy'))
     epochs = np.arange(len(val_loss))
     plt.figure()
+    plt.title('Loss Curve')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
     plt.plot(epochs,val_loss,label='Validation Loss')
     plt.plot(epochs,train_loss,label='Training Loss')
     plt.legend()
@@ -56,10 +60,12 @@ def main():
     device = torch.device("cuda" if use_cuda else "cpu")
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
     model = transferResNet18()
+    model.eval() 
     #model = PhoneLocator().to(device)
     if (use_cuda):
         model.cuda()       
     if os.path.isfile(pathToModel):
+    
         if not use_cuda:
             model.load_state_dict(torch.load(pathToModel,map_location='cpu'))
         else:

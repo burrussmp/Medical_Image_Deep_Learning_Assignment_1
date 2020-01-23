@@ -63,7 +63,12 @@ def AugmentFlipImage(X,Y):
     y_flip_vertical_horizontal = np.copy(y_flip_vertical)
     y_flip_vertical_horizontal[:,0] = 1 - y_flip_vertical_horizontal[:,0]
     X = np.concatenate((X,x_flip_horizontal,x_flip_vertical,x_flip_vertical_horizontal),axis=0)
-    Y = np.concatenate((Y,y_flip_horizontal,y_flip_vertical,y_flip_vertical_horizontal),axis=0)    
+    Y = np.concatenate((Y,y_flip_horizontal,y_flip_vertical,y_flip_vertical_horizontal),axis=0)
+
+    # cv2.imwrite('../resources/norm.png',(X[1]*255).astype(np.uint8))
+    # cv2.imwrite('../resources/horiz.png',(x_flip_horizontal[1]*255).astype(np.uint8))
+    # cv2.imwrite('../resources/vert.png',(x_flip_vertical[1]*255).astype(np.uint8))
+    # cv2.imwrite('../resources/vert_horiz.png',(x_flip_vertical_horizontal[1]*255).astype(np.uint8))   
     return X,Y
 
 def AugmentBrightnessRandomly(X,Y,br=0.2):
@@ -78,6 +83,9 @@ def AugmentBrightnessRandomly(X,Y,br=0.2):
         x_bright[i] = rand_image.astype(np.float32)
         # print(x_bright[i])
         # cv2.imshow('bright',x_bright[i].astype(np.uint8))
+        if (i==3):
+            cv2.imwrite('../resources/bright.png',x_bright[i].astype(np.uint8))
+            cv2.imwrite('../resources/reg.png',(X[i]*255).astype(np.uint8))
         # cv2.imshow('reg',X[i])
         # cv2.waitKey(0)
     x_bright /= 255.
@@ -96,4 +104,3 @@ def performDataAugmentation(X,Y,typeOfData='train'):
 
 def reshapeInput(X):
     return np.swapaxes(X, 1, 3)
-    
