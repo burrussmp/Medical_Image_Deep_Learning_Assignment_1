@@ -16,22 +16,21 @@ import matplotlib.pyplot as plt
 from config import *
 
 def createImages(model,use_cuda):
-    pathToTest = '../test' 
+    pathToTest = PATH_TO_TEST_FOLDER
     for file in os.listdir(pathToTest):
         orig_img = cv2.imread(os.path.join(pathToTest,file)).astype(np.float32)
         img = np.expand_dims(preprocess(np.copy(orig_img)),axis=0)
         img = reshapeInput(img)
-        print(orig_img.shape)
         prediction = model(torch.tensor(img))
         if (use_cuda):
             result = prediction.cpu().data.numpy()[0]
         else:
             result = prediction.data.numpy()[0]
-        print(file,result)
+        print('File:',file,'\nResult:',np.round(result,4),'\n')
         y = int(result[1]*orig_img.shape[0])
         x = int(result[0]*orig_img.shape[1])
         drawn_circle = cv2.circle(orig_img, (x,y), 4, (0,0,255), -1)
-        cv2.imwrite('../resources/'+file,drawn_circle.astype(np.uint8))
+        #cv2.imwrite('./resources/'+file,drawn_circle.astype(np.uint8))
         # cv2.imshow('Located phone',drawn_circle.astype(np.uint8))
         # cv2.waitKey(0)
     # plot the training and validation loss
@@ -49,7 +48,7 @@ def createImages(model,use_cuda):
 
 def main():
     # parameters
-    pathToModel = './PhoneDetector.pt'
+    pathToModel = './src/PhoneDetector.pt'
     parser = argparse.ArgumentParser(description='Assignment 1')
     parser.add_argument("files",nargs="*")
     args = parser.parse_args()
@@ -65,7 +64,6 @@ def main():
     if (use_cuda):
         model.cuda()       
     if os.path.isfile(pathToModel):
-    
         if not use_cuda:
             model.load_state_dict(torch.load(pathToModel,map_location='cpu'))
         else:
@@ -84,11 +82,8 @@ def main():
                 result = prediction.cpu().data.numpy()
             else:
                 result = prediction.data.numpy()
-            print(np.round(result,4))
-
-
-    x_train,y_train,x_val,y_val,x_test = load_dataset()
-
+            rounded = np.round(result[0],4)
+            print(rounded[0],rounded[1])
 
 if __name__ == '__main__':
     main()

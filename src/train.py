@@ -77,7 +77,7 @@ def main():
     epochs = 150
     lr_scheduler_step_size = 30
     adam_betas = (0.9,0.999)
-    pathToModel = './PhoneDetector.pt'
+    pathToModel = './src/PhoneDetector.pt'
     restart = True
 
     # attempt to use GPU if available
