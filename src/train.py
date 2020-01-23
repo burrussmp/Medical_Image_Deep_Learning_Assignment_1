@@ -55,16 +55,12 @@ def validate(model, device, validation_loader):
     test_loss = 0
     correct = 0
     criteria = torch.nn.MSELoss()
-    #absolute_error = torch.nn.L1Loss()
     with torch.no_grad():
         for data, target in validation_loader: # load the data
             data, target = data.to(device), target.to(device)
             output = model(data) # collect the outputs
             test_loss += criteria(output, target)  # sum up batch loss
             distance = torch.dist(target,output)
-            # print(output)
-            # print(target)
-            #print(distance)
             correct += distance.lt(torch.tensor(0.05)).sum().item()
     test_loss /= len(validation_loader.dataset) # compute the average loss
     print('Test set: Average loss: {:.4f}, Number within range: {}/{} ({:.0f}%)\n'.format(
