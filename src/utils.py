@@ -66,24 +66,32 @@ def AugmentFlipImage(X,Y):
     Y = np.concatenate((Y,y_flip_horizontal,y_flip_vertical,y_flip_vertical_horizontal),axis=0)    
     return X,Y
 
-def AugmentBrightnessRandomly(X,Y,br=0.25):
+def AugmentBrightnessRandomly(X,Y,br=0.2):
     x_bright = np.zeros_like(X)
     for i in range(X.shape[0]):
-        image = X[i]
+        image = np.copy(X[i])*255
         image = image.astype(np.uint8)
         rand_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         rand_bright = br + np.random.uniform()
         rand_image[:,:,2] = rand_image[:,:,2]*rand_bright
         rand_image = cv2.cvtColor(rand_image, cv2.COLOR_HSV2RGB)
         x_bright[i] = rand_image.astype(np.float32)
+        # print(x_bright[i])
+        # cv2.imshow('bright',x_bright[i].astype(np.uint8))
+        # cv2.imshow('reg',X[i])
+        # cv2.waitKey(0)
+    x_bright /= 255.
     X = np.concatenate((X,x_bright),axis=0)
     Y = np.concatenate((Y,Y),axis=0)
     return X,Y
 
 
-def performDataAugmentation(X,Y):
+def performDataAugmentation(X,Y,typeOfData='train'):
+    assert typeOfData in ['train','val'],\
+        print('Not valid!')
     X,Y = AugmentFlipImage(X,Y)
-    #X,Y = AugmentBrightnessRandomly(X,Y,br=0.25)
+    if (typeOfData=='train'):
+        X,Y = AugmentBrightnessRandomly(X,Y,br=0.25)
     return X,Y
 
 def reshapeInput(X):
